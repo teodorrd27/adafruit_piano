@@ -19,9 +19,10 @@ byte curWheelPos = 0;
 #define STRIP_PIN 10
 #define STRIP_NUM_PIXELS 73
 
-#define RED 255
-#define GREEN 0
-#define BLACK 0
+#define RED 0
+#define GREEN 255
+#define BLUE 0
+
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
@@ -32,6 +33,11 @@ byte curWheelPos = 0;
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_NUM_PIXELS, STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
+/**
+  * True -- set the RED GREEN BLUE flags above to pick your RGB color
+  * False -- leave false to continue with effects
+  */
+bool userDefinedColor = true
 // -----------------------------------------------------------------------------
 
 inline void handleGateChanged(bool inGateActive)
@@ -79,8 +85,15 @@ void handleNotesChanged(bool isFirstNote = false)
         {
             if(midiNotes.get(i, pitch))
             {
-                strip.setPixelColor(noteToStripIndex(pitch), Wheel(curWheelPos & 255));
-                curWheelPos++;
+                switch (userDefinedColor){
+                  case true:    strip.setPixelColor(noteToStripIndex(pitch), strip.Color(RED, GREEN, BLUE));
+                                break;
+
+                  case false:     strip.setPixelColor(noteToStripIndex(pitch), Wheel(curWheelPos & 255));
+                                  curWheelPos++;
+                                  break;
+                }
+
             }
         }
         strip.show();
